@@ -4,46 +4,67 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function App() {
-    axios.defaults.baseURL = "http://localhost:1198/api/v1";
-    const [message, setMessage] = useState("message");
-    const [dateTime, setDateTime] = useState(new Date().toISOString());
+const apiClient = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL || "/api/v1",
+});
 
-    const handleSetMessage = async () => {
-        try {
-            const config = {
-                type: "GET",
-                url: "/a2rp",
-            };
-            const response = await axios(config);
-            console.log(response);
-            const data = response.data;
-            if (data.success === true) {
-                setMessage(data.message);
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error(error.message);
-            setMessage(error.message);
-        }
-    };
+function App() {
+    const [message, setMessage] = useState("Loading backend message...");
+    const [dateTime, setDateTime] = useState(() => new Date());
+
     useEffect(() => {
-        handleSetMessage();
+        let active = true;
+
+        const loadMessage = async () => {
+            try {
+                const response = await apiClient.get("/a2rp");
+                const data = response.data || {};
+
+                if (!active) {
+                    return;
+                }
+
+                setMessage(
+                    data.success && data.message
+                        ? data.message
+                        : "The backend returned an unexpected response.",
+                );
+            } catch (error) {
+                if (!active) {
+                    return;
+                }
+
+                const errorMessage =
+                    error.response?.data?.message ||
+                    error.message ||
+                    "Unable to reach the backend.";
+
+                toast.error(errorMessage);
+                setMessage(errorMessage);
+            }
+        };
+
+        loadMessage();
+
+        return () => {
+            active = false;
+        };
     }, []);
 
-    const handleSetDateTime = () => {
-        const value = new Date().toISOString();
-        setDateTime(value);
-    };
     useEffect(() => {
-        const timeout = setTimeout(handleSetDateTime, 1000 * 1 / 30);
-        return () => { clearTimeout(timeout); };
-    }, [dateTime]);
+        const intervalId = window.setInterval(() => {
+            setDateTime(new Date());
+        }, 1000);
+
+        return () => window.clearInterval(intervalId);
+    }, []);
 
     return (
         <div className={styles.container}>
             <div className={styles.messageFromAPI}>Message from backend &rArr; {message}</div>
-            <div className={styles.dateTime}>Date time &rArr; {dateTime}</div>
+            <div className={styles.dateTime}>
+                Local date and time &rArr; {dateTime.toLocaleString()}
+            </div>
 
             <ToastContainer />
         </div>

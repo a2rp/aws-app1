@@ -1,261 +1,101 @@
 # AWS App 1
 
-A simple full-stack web application built with React, Node.js, and Express.
-
-The project demonstrates communication between a React frontend and an Express backend API while displaying backend data and a live date and time interface.
+A small full-stack demo that connects a React frontend to a versioned Express API. The page displays the API response and the visitor's local date and time.
 
 ## Features
 
-- React frontend
-- Node.js and Express backend
-- REST API communication
-- Axios-based API requests
-- Live date and time display
-- Separate frontend and backend structure
-- Express static frontend serving
-- Environment-based backend port support
-- Simple API versioning structure
+- React 18 frontend with Axios requests
+- Node.js and Express REST API under `/api/v1`
+- Local development proxy from the frontend to the backend
+- Express can serve the compiled frontend build
+- Local date and time display
 
 ## Tech Stack
 
-### Frontend
-
-- React 18
-- JavaScript
-- Axios
-- SCSS
-- CSS Modules
-- Create React App
-
-### Backend
-
-- Node.js
-- Express.js
-- CORS
+- React, Create React App, JavaScript, Axios, SCSS modules
+- Node.js, Express, CORS
 
 ## Project Structure
 
 ```text
 aws-app1/
-├── backend/
-│   ├── src/
-│   │   └── v1/
-│   │       ├── controllers/
-│   │       │   └── a2rp.controller.js
-│   │       └── routes/
-│   │           └── index.js
-│   ├── index.js
-│   ├── rest.http
-│   ├── package.json
-│   └── package-lock.json
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   ├── index.css
-│   │   ├── styles.module.scss
-│   │   ├── styles.module.css
-│   │   └── styles.module.css.map
-│   ├── build/
-│   ├── package.json
-│   └── package-lock.json
-│
-├── .gitignore
-├── LICENSE
-└── README.md
+|-- backend/
+|   |-- src/v1/controllers/a2rp.controller.js
+|   |-- src/v1/routes/index.js
+|   |-- index.js
+|   |-- package.json
+|   `-- rest.http
+|-- frontend/
+|   |-- public/
+|   |-- src/App.js
+|   |-- src/index.js
+|   |-- package.json
+|   `-- build/ (generated production assets)
+|-- README.md
+`-- LICENSE
 ```
 
-## How It Works
+## Run Locally
 
-The application contains two main parts:
+Start the backend in one terminal:
 
-1. The Express backend exposes an API under `/api/v1`.
-2. The React frontend sends requests to the backend.
-3. The backend returns application data.
-4. The frontend displays the returned data together with a live date and time interface.
+```bash
+cd backend
+npm install
+npm start
+```
 
-The backend can also serve the compiled React frontend from the frontend build directory.
+Start the frontend in another terminal:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The backend listens on port `1198` by default. Create React App proxies `/api` requests to it during local development.
 
 ## API
 
-The backend uses the following API base path:
-
-```text
-/api/v1
-```
-
-The application includes the following endpoint:
-
-```text
-GET /api/v1/a2rp
-```
-
-When running locally with the default configuration, the backend is available at:
-
-```text
-http://localhost:1198
-```
-
-The API endpoint is therefore available at:
+The frontend requests `GET /api/v1/a2rp`. The backend returns a JSON message. Test it with `backend/rest.http` or open:
 
 ```text
 http://localhost:1198/api/v1/a2rp
 ```
 
-## Prerequisites
-
-Install the following before running the project:
-
-- Node.js
-- npm
-- Git
-
-Check the installed versions:
-
-```bash
-node --version
-npm --version
-git --version
-```
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/a2rp/aws-app1.git
-cd aws-app1
-```
-
-## Backend Setup
-
-Navigate to the backend directory:
-
-```bash
-cd backend
-```
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-Start the backend:
-
-```bash
-npm start
-```
-
-The backend runs on:
+The frontend uses the relative API base `/api/v1`, so it works when Express serves the frontend and API from the same origin. If you deploy the frontend separately, set `REACT_APP_API_BASE_URL` before building, for example:
 
 ```text
-http://localhost:1198
+REACT_APP_API_BASE_URL=https://your-api-host.example/api/v1
 ```
-
-unless a different port is provided through the environment.
-
-## Frontend Setup
-
-Open another terminal and navigate to the frontend directory:
-
-```bash
-cd frontend
-```
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-Start the React development server:
-
-```bash
-npm start
-```
-
-The React development server will start the frontend application locally.
 
 ## Production Build
 
-To generate a production frontend build:
+Build the frontend from its directory:
 
 ```bash
 cd frontend
 npm run build
 ```
 
-The compiled application is generated inside:
+The output goes to `frontend/build`, which the Express server serves as static files. Rebuild it whenever frontend source or public assets change.
 
-```text
-frontend/build
-```
-
-The Express backend is configured to serve the frontend production files.
-
-## Running the Application
-
-For local development, run the backend and frontend separately.
-
-### Terminal 1
+To run the production app, start the backend from any working directory:
 
 ```bash
 cd backend
 npm start
 ```
 
-### Terminal 2
+Set `PORT` to override the default backend port `1198`.
 
-```bash
-cd frontend
-npm start
-```
+## License
 
-## API Testing
-
-The backend contains a `rest.http` file that can be used with an HTTP client extension such as REST Client in Visual Studio Code.
-
-The local API request is:
-
-```http
-GET http://localhost:1198/api/v1/a2rp
-```
-
-## Purpose
-
-AWS App 1 was created as a lightweight full-stack application demonstrating:
-
-- React and Express integration
-- REST API creation
-- API versioning
-- Frontend API consumption
-- Node.js backend setup
-- Client and server separation
-- Production frontend serving
-- Basic full-stack project organization
-
-## Author
-
-**Ashish Ranjan**
-Full-Stack Web Developer
+MIT License. See [LICENSE](./LICENSE).
 
 ## Links
 
 - Portfolio: https://www.ashishranjan.net
 - GitHub: https://github.com/a2rp
-- CodePen: https://codepen.io/ash1198
 - LinkedIn: https://www.linkedin.com/in/aashishranjan
-- Facebook: https://www.facebook.com/theash.ashish/
-- YouTube: https://www.youtube.com/@ashishranjan-ashz?sub_confirmation=1
 - Email: mailto:ash.ranjan09@gmail.com
-
-## Support
-
-- Support: https://a2rp-donation-page.netlify.app/
-- Buy Me a Coffee: https://buymeacoffee.com/a2rp
-- Patreon: https://www.patreon.com/a2rp
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.

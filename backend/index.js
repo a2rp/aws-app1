@@ -11,11 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", routes);
 
-const _dirname = path.dirname("");
-const buildpath = path.join(_dirname, "../frontend/build");
-app.use(express.static(buildpath));
-
-console.log(path.join(_dirname, "frontend", "build"))
+const buildPath = path.resolve(__dirname, "../frontend/build");
+app.use(express.static(buildPath));
 
 const PORT = process.env.PORT || 1198;
 app.listen(PORT, () => {
